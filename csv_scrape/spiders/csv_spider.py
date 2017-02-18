@@ -49,29 +49,44 @@ def multiple_replace(dict, text):
     # For each match, look-up corresponding value in dictionary
     return regex.sub(lambda mo: dict[mo.string[mo.start():mo.end()]], text)
 
-with open('/home/brian/Documents/output.csv', 'r+t') as f:
-    pattern = re.compile(r'(http:\/\/www\.lespagesmaghreb\.com.+?)(?:,|\s)')
+def scrape_job():
+    f = open('/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv', 'r+t')
     text = f.read()
-    count = 0
+    f.close()
+    pattern = re.compile(r'(http:\/\/www\.lespagesmaghreb\.com.+?)(?:,|\s)')
+#   count = 0
     scraps = {}
     try:
         for link in re.findall(pattern, text):
-            count += 1
-            print(link)
+#           count += 1
+            print('.', end='')
 
             urllib.request.urlretrieve(link, "/home/brian/Documents/csv_scrape/csv_scrape/spiders/image.png")
 
 
             scraps[link] = img_to_txt("/home/brian/Documents/csv_scrape/csv_scrape/spiders/image.png")
-            print(count)
+#           print(count)
 
         #open file to write output csv
-        fi = open("/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv", "w")
-        print(multiple_replace(scraps, text),file=fi)
+#       fi = open("/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv", "w")
+        f = open('/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv', 'r+t')
+        print(multiple_replace(scraps, text),file=f)
     except:
         #open file to write output csv
-        fi = open("/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv", "w")
-        print(multiple_replace(scraps, text),file=fi)
+#       fi = open("/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv", "w")
+        f = open('/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv', 'r+t')
+        print(multiple_replace(scraps, text),file=f)
         print('exception raised')
         print(link)
 
+condition = True
+while condition == True:
+    fil = open('/home/brian/Documents/csv_scrape/csv_scrape/spiders/output.csv', 'r+t')
+    fil_text = fil.read()
+    pat = re.compile(r'(http:\/\/www\.lespagesmaghreb\.com.+?)(?:,|\s)')
+    
+    if len(re.findall(pat, fil_text)) > 0:
+        print('Scrapes left: ' + str(len(re.findall(pat, fil_text))))
+        scrape_job()
+    else:
+        condition = False
